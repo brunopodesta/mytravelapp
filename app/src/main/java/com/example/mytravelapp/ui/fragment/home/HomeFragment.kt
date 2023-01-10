@@ -31,7 +31,7 @@ class HomeFragment : BaseFragment() {
 
         }
         binding.recyclerview.adapter = homeAdapter
-        homeAdapter.setData(attraction)
+        homeAdapter.setData(attractions)
 
     }
 

@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.mytravelapp.R
 import com.example.mytravelapp.data.Attraction
 import com.example.mytravelapp.data.AttractionResponse
@@ -17,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var navController: NavController
 
+    private lateinit var appBarConfiguration : AppBarConfiguration
+
     val attractions: List<Attraction> by lazy {
         uploadAttractions()
     }
@@ -28,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHostFragment.navController
+
+        appBarConfiguration = AppBarConfiguration(navController.graph)
+        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     fun uploadAttractions(): List<Attraction> {
@@ -40,4 +48,9 @@ class MainActivity : AppCompatActivity() {
         val adapter : JsonAdapter<AttractionResponse> = moshi.adapter(AttractionResponse::class.java)
         return adapter.fromJson(textFromFile)!!.attractions
     }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
 }

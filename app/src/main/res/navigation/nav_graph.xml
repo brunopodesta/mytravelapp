@@ -20,11 +20,7 @@
         android:name="com.example.mytravelapp.ui.fragment.AttractionDetailFragment"
         android:label="Attraction Detail"
         tools:layout="@layout/fragment_attaction_detail"
-        >
-        <argument
-            android:name="attractionid"
-            app:argType="string" />
-    </fragment>
+        />
 
 
 </navigation>

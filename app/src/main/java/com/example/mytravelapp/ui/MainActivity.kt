@@ -1,7 +1,10 @@
 package com.example.mytravelapp.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -10,6 +13,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.mytravelapp.R
 import com.example.mytravelapp.data.Attraction
 import com.example.mytravelapp.data.AttractionResponse
+import com.example.mytravelapp.viewmodel.AttractionViewModel
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -22,9 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration : AppBarConfiguration
 
-    val attractions: List<Attraction> by lazy {
-        uploadAttractions()
-    }
+    val viewModel : AttractionViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,17 +38,17 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
-    }
+        viewModel.init(applicationContext)
 
-    fun uploadAttractions(): List<Attraction> {
+        viewModel.locationSelected.observe(this) { attraction ->
+            val uri =
+                Uri.parse("geo:${attraction.location.latitude}, " +
+                        "${attraction.location.longitude}")
+            val mapIntent = Intent(Intent.ACTION_VIEW, uri)
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
+        }
 
-        val textFromFile =
-            resources.openRawResource(R.raw.croatia).bufferedReader().use { it.readText() }
-
-        val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-
-        val adapter : JsonAdapter<AttractionResponse> = moshi.adapter(AttractionResponse::class.java)
-        return adapter.fromJson(textFromFile)!!.attractions
     }
 
     override fun onSupportNavigateUp(): Boolean {
